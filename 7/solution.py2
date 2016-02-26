@@ -1,0 +1,25 @@
+#!/usr/bin/env python
+from __future__ import division, print_function
+
+import sys
+
+def evaluate(elements):
+    stack = []
+    for element in elements:
+        if element == '*':
+            stack.append(stack.pop() * stack.pop())
+        elif element == '+':
+            stack.append(stack.pop() + stack.pop())
+        elif element == '/':
+            top = stack.pop()
+            bottom = stack.pop()
+            stack.append(top / bottom)
+        else: stack.append(int(element))
+    return int(stack[0])
+
+with open(sys.argv[1], 'r') as test_cases:
+    for test in test_cases:
+        if not test:
+            continue
+        test = test.strip().split()
+        print(evaluate(reversed(test)))
