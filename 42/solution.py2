@@ -1,0 +1,35 @@
+#!/usr/bin/env python
+from __future__ import print_function
+
+import itertools
+import sys
+
+def ugly_number(num):
+    return bool(num % 2 == 0 or num % 3 == 0 or num % 5 == 0 or num % 7 == 0)
+
+def generate_components(num_string):
+    yield [int(num_string)]
+    split_choices = range(1, len(num_string))
+    for num_splits in split_choices:
+        for indexes in itertools.combinations(split_choices, num_splits):
+            yield [int(num_string[i:j]) for i, j in zip((0,) + indexes, indexes + (None,))]
+
+def generate_candidates(component):
+    if len(component) == 1:
+        yield component[0]
+    else:
+        for candidate in generate_candidates(component[1:]):
+            yield component[0] + candidate
+            yield component[0] - candidate
+
+def generate_results(num_string):
+    for component in generate_components(test):
+        for candidate in generate_candidates(component):
+            yield ugly_number(candidate)
+
+with open(sys.argv[1], 'r') as test_cases:
+    for test in test_cases:
+        if not test:
+            continue
+        test = test.strip()
+        print(list(generate_results(test)).count(True))
