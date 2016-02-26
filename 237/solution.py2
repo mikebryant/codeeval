@@ -1,0 +1,15 @@
+#!/usr/bin/env python
+from __future__ import print_function
+
+import sys
+
+def component_sum(component_string, base):
+    return sum([int(component, base) for component in component_string.split()])
+
+with open(sys.argv[1], 'r') as test_cases:
+    for test in test_cases:
+        if not test:
+            continue
+        virus_components, antivirus_components = test.split('|')
+        result = component_sum(virus_components, 16) <= component_sum(antivirus_components, 2)
+        print(result)
