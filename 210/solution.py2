@@ -1,0 +1,79 @@
+#!/usr/bin/env python
+'''
+BRAINF*CK
+CHALLENGE DESCRIPTION:
+
+Looking for something utterly mind-blowing? Look no further, you hit the right place!
+This challenge is inextricably linked with Brainf*ck, the most famous esoteric programming language invented by Urban Muller. Is this the first time you hear about Brainf*ck? Find out more Brainf*ck (wiki)
+
+Brainf*ck consists of only 8 basic commands:
+> - move to the next cell;
+< - move to the previous cell;
++ - increment the value in the current cell by 1;
+- - decrement the value of the current cell by 1;
+. - output the value of the current cell;
+, - input the value outside and store it in the current cell;
+[ - if the value of the current cell is zero, move forward on the text to the program to] taking into account nesting;
+] - if the value of the current cell is not zero, go back on the text of the program to [considering nesting;
+
+So, you should write a program that will get the code on the Brainf*ck language, calculate this code, and display the final result of the program. It can be a simple output of letters or a complex cycle; in any case, your program should handle it.
+'''
+from __future__ import print_function
+
+import collections
+import sys
+
+def preprocess(program):
+    program_cells = []
+    stack = []
+    for index, instruction in enumerate(program):
+        if instruction == '[':
+            program_cells.append('[')
+            stack.append(index)
+        elif instruction == ']':
+            previous_index = stack.pop()
+            program_cells.append(previous_index)
+            program_cells[previous_index] = index
+        else:
+            program_cells.append(instruction)
+    return program_cells
+
+
+def evaluate(program):
+    program = preprocess(program)
+
+    cells = collections.defaultdict(int)
+    instruction_pointer = 0
+    cell_pointer = 0
+
+    while instruction_pointer < len(program):
+        instruction = program[instruction_pointer]
+        if instruction == '>':
+            cell_pointer += 1
+        elif instruction == '<':
+            cell_pointer -= 1
+        elif instruction == '+':
+            cells[cell_pointer] = (cells[cell_pointer] + 1) % 256
+        elif instruction == '-':
+            cells[cell_pointer] = (cells[cell_pointer] - 1) % 256
+        elif instruction == '.':
+            yield chr(cells[cell_pointer])
+        elif instruction == ',':
+            raise Exception
+        else:
+            if instruction > instruction_pointer:
+                if cells[cell_pointer] == 0:
+                    instruction_pointer = instruction
+            elif instruction < instruction_pointer:
+                if cells[cell_pointer] != 0:
+                    instruction_pointer = instruction
+            else:
+                raise Exception
+        instruction_pointer += 1
+
+with open(sys.argv[1], 'r') as test_cases:
+    for test in test_cases:
+        if not test:
+            continue
+        test = test.strip()
+        print(''.join(evaluate(test)))
