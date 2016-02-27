@@ -1,0 +1,24 @@
+#!/usr/bin/env python
+from __future__ import division, print_function
+
+import sys
+
+def stupid_sort_iteration(values):
+    for index in range(0, len(values) - 1):
+        if values[index] > values[index + 1]:
+            values[index], values[index + 1] = values[index + 1], values[index]
+            break
+
+def run_sort_iterations(values, number):
+    for i in range(number):
+        stupid_sort_iteration(values)
+
+with open(sys.argv[1], 'r') as test_cases:
+    for test in test_cases:
+        if not test:
+            continue
+        values, num_iterations = test.split('|')
+        values = list(map(int, values.split()))
+        num_iterations = int(num_iterations)
+        run_sort_iterations(values, num_iterations)
+        print(' '.join(map(str, values)))
